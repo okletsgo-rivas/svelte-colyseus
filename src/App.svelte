@@ -1,24 +1,21 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { Client, Room } from "colyseus.js";
-  export let name: string;
 
   let messages: string[] = [];
 
   onMount(async () => {
     const client = new Client("ws://localhost:2567");
     const room: Room<any> = await client.joinOrCreate<any>("chat_room");
-    room.state.messages.onAdd = (message, key) => {
+    room.state.messages.onAdd = (message: string) => {
       messages = [...messages, message];
-      // Scroll to bottom of chat
-      // messages.scrollTo(0, messages.scrollHeight);
     };
     room.send("message", "Test");
   });
 </script>
 
 <main>
-  <h1>Hello {name}!</h1>
+  <h1>Hello World!</h1>
   {#each messages as msg}
     <p>{msg}</p>
   {/each}

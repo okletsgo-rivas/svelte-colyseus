@@ -1,10 +1,11 @@
-import svelte from "rollup-plugin-svelte";
 import commonjs from "@rollup/plugin-commonjs";
 import resolve from "@rollup/plugin-node-resolve";
+import typescript from "@rollup/plugin-typescript";
+import alias from "@rollup/plugin-alias";
+import svelte from "rollup-plugin-svelte";
 import livereload from "rollup-plugin-livereload";
 import { terser } from "rollup-plugin-terser";
 import sveltePreprocess from "svelte-preprocess";
-import typescript from "@rollup/plugin-typescript";
 import css from "rollup-plugin-css-only";
 
 const production = !process.env.ROLLUP_WATCH;
@@ -59,6 +60,21 @@ export default {
     // some cases you'll need additional configuration -
     // consult the documentation for details:
     // https://github.com/rollup/plugins/tree/master/packages/commonjs
+    alias({
+      entries: [
+        // httpie: force XHR implementation on browser/UMD environment
+        { find: "httpie", replacement: "./node_modules/httpie/xhr/index.js" },
+
+        // ws: force browser.js version.
+        { find: "ws", replacement: "./node_modules/ws/browser.js" },
+
+        // @colyseus/schema: force browser version.
+        {
+          find: "@colyseus/schema",
+          replacement: "./node_modules/@colyseus/schema/build/umd/index.js",
+        },
+      ],
+    }),
     resolve({
       browser: true,
       dedupe: ["svelte"],
